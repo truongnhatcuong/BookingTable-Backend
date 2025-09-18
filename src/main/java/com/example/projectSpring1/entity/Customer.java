@@ -17,7 +17,7 @@ import lombok.experimental.FieldDefaults;
 
 
     @Entity
-    @Table(name = "Customer")
+    @Table(name = "customer")
     @Data
     @Builder
     @NoArgsConstructor
@@ -27,7 +27,7 @@ import lombok.experimental.FieldDefaults;
     public class Customer {
     @Id
       @GeneratedValue(strategy = GenerationType.IDENTITY)
-         Long Id;
+         Long id;
          String firstName;
          String lastName;
         @Column(nullable = false, unique = true)

@@ -8,6 +8,7 @@ public class GenericService<T, ID> {
 
     protected final JpaRepository<T, ID> repository;
 
+    
     public GenericService(JpaRepository<T, ID> repository) {
         this.repository = repository;
     }

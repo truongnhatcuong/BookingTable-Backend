@@ -1,0 +1,19 @@
+package com.example.projectSpring1.mapper;
+
+import java.util.List;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+import com.example.projectSpring1.dto.request.CustomerRequest;
+import com.example.projectSpring1.dto.response.CustomerResponse;
+import com.example.projectSpring1.entity.Customer;
+
+@Mapper(componentModel = "spring")  // ✅ Quan trọng
+public interface CustomerMapper {
+
+    CustomerResponse toCustomer(Customer customer);
+    List<CustomerResponse> toCustomerList(List<Customer> customers);
+    @Mapping(target = "id", ignore = true)
+    Customer toCustomerEntity(CustomerRequest request);
+}
