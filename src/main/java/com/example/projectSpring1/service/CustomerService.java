@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.projectSpring1.dto.request.CustomerUpdateRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.projectSpring1.dto.request.CustomerRequest;
@@ -22,8 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class CustomerService  extends GenericService<Customer,Long> {
-    final CustomerRepository customerRepository;
-    final CustomerMapper customerMapper;
+    @Autowired
+     CustomerRepository customerRepository;
+     CustomerMapper customerMapper;
    // 👇 Bắt buộc thêm constructor để gọi constructor cha
     public CustomerService(CustomerRepository customerRepository, CustomerMapper customerMapper) {
         super(customerRepository); // gọi constructor GenericService
@@ -55,7 +58,18 @@ public class CustomerService  extends GenericService<Customer,Long> {
        return customerMapper.toCustomerList(customerRepository.findAll());
     }
 
-    // public Customer findByEmail(String email){
-    //     return customerRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("Customer not found with email: " + email));
-    // }
+    public  CustomerResponse UpdateUser(Long id , CustomerUpdateRequest request){
+        Customer existingCustomer =  customerRepository.findById(id).orElseThrow(()->  new RuntimeException("not found id " + id ));
+    customerMapper.updateCustomerFromRequest(request,existingCustomer);
+        Customer updated = customerRepository.save(existingCustomer);
+    return  customerMapper.toCustomer(updated);
+    }
+
+    public Long DeleteUser(Long id){
+       customerRepository.findById(id).orElseThrow(()-> new RuntimeException("User not found"+id));
+          customerRepository.deleteById(id);
+        return id;
+    }
+
+ 
 }
