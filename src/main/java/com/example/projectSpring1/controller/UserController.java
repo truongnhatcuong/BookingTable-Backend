@@ -4,7 +4,9 @@ import java.util.List;
 
 import com.example.projectSpring1.dto.request.CustomerUpdateRequest;
 import com.example.projectSpring1.dto.response.ApiResponse;
+import com.example.projectSpring1.entity.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,12 +40,23 @@ public class UserController {
     }
     
     @GetMapping()
-        public ResponseEntity<ApiResponse<List<CustomerResponse>>> getAllCustomers() {
-        List<CustomerResponse> customerResponse = customerService.getAllCustomer();
+        public ResponseEntity<ApiResponse<Page<CustomerResponse>>> getAllCustomers(@RequestParam(required = false) String firstName
+            , @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "3") int size
+            , @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "desc") String sortDir
+                                                                                   ) {
+        Page<CustomerResponse> customerResponse = customerService.getAllCustomer(firstName,page,size,sortBy, sortDir);
         return ResponseEntity.ok(
                 new ApiResponse<>( "Success", customerResponse)
         );
     }
+
+    @GetMapping("/{id}")
+    public  ResponseEntity<ApiResponse<CustomerResponse>> getIdForCustomer(@PathVariable Long id){
+        CustomerResponse customer = customerService.getFindId(id);
+        return ResponseEntity.ok(new ApiResponse<>("success",customer));
+    }
+
+
 
     @PutMapping("/{id}")
     public  ResponseEntity<ApiResponse<CustomerResponse>> updateCustomer(@PathVariable Long id ,  @RequestBody CustomerUpdateRequest customerRequest){
