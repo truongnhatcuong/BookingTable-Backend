@@ -1,16 +1,20 @@
 package com.example.projectSpring1.controller;
 
 
-import com.example.projectSpring1.config.PasswordUtils;
 import com.example.projectSpring1.dto.request.LoginRequest;
 import com.example.projectSpring1.dto.response.ApiResponse;
+import com.example.projectSpring1.dto.response.EmployeeResponse;
 import com.example.projectSpring1.dto.response.authenticationResponse;
-import com.example.projectSpring1.service.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import com.example.projectSpring1.config.JwtUtil;
+import com.example.projectSpring1.service.EmployeeUserDetailsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,38 +24,41 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class authAdmin {
-    @Value("${app.admin.username}")
-    private String adminUsername;
-
-    @Value("${app.admin.password}")
-    private String adminPassword;
-    @Autowired
-      JwtUtil jwtUtil;
-
-
+    private final AuthenticationManager authManager;
+    private final JwtUtil jwtUtil;
+    private final EmployeeUserDetailsService userDetailsService;
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<authenticationResponse>> login(@RequestBody LoginRequest request) {
+        try {
+            Authentication authentication = authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+            );
 
-        if (adminUsername.equals(request.getUserName()) &&
+            EmployeeResponse employeeResponse = userDetailsService.findByUsername(request.getUsername());
 
-                PasswordUtils.verifyPassword(request.getPassword(), adminPassword)) {
-            String token = jwtUtil.generationToken(adminUsername);
-
-            authenticationResponse authResponse = authenticationResponse.builder()
-                    .token(token)
-                    .authenticated(true)
-                    .build();
-
-            return ResponseEntity.ok(new ApiResponse<>("success", authResponse));
+            return ResponseEntity.ok(
+                    new ApiResponse<>("Login Success",
+                            authenticationResponse.builder()
+                                    .token(jwtUtil.generationToken(authentication.getName(),employeeResponse.getEmployeeId(),employeeResponse.getRole()))
+                                    .authenticated(true)
+                                    .build())
+            );
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse<>("Business Error",  authenticationResponse.builder()
+                            .authenticated(false)
+                            .token(null)
+                            .error("User not found")
+                            .build()));
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse<>("Business Error",  authenticationResponse.builder()
+                            .authenticated(false)
+                            .token(null)
+                            .error("Invalid password") // add extra field in AuthenticationResponse
+                            .build()));
         }
-
-        authenticationResponse authResponse = authenticationResponse.builder()
-                .token(null)
-                .authenticated(false)
-                .build();
-
-        return ResponseEntity.status(401).body(new ApiResponse<>("fail", authResponse));
     }
-
 }

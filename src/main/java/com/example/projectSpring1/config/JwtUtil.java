@@ -1,6 +1,5 @@
-package com.example.projectSpring1.service;
+package com.example.projectSpring1.config;
 
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -17,21 +16,13 @@ public class JwtUtil {
     @Value("${app.jwt.expiration}")
     private long jwtExpiration;
 
-    public  String generationToken(String userName){
-        return Jwts.builder().setSubject(userName)
+    public  String generationToken(String username,Long id,String role){
+        return Jwts.builder().setSubject(username).claim("id",id).claim("role", role)
                 .setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis()+jwtExpiration))
                 .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()), SignatureAlgorithm.HS256).compact();
 
     }
 
-    public  boolean validateToken(String token){
-        try{
-            Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes())).build().parseClaimsJws(token);
-            return  true;
-        }catch (JwtException e) {
-            return false;
-        }
-    }
 
     public String extractUsername(String token) {
         return Jwts.parserBuilder()

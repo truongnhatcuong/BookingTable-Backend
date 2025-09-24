@@ -15,12 +15,7 @@ public class HelloController {
 
 @GetMapping("/")
 public String Hello() {
-
-    String hashed = PasswordUtils.hashPassword("admin123");
-
-    System.out.println("Hashed password: " + hashed);
-
-    return  "mk la "+ hashed;
+    return  "server is running";
 }
 
     @GetMapping("/admin")
