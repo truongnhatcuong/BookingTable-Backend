@@ -1,5 +1,7 @@
-package com.example.projectSpring1.config;
+package com.example.projectSpring1.configuration;
 
+import com.example.projectSpring1.dto.response.JwtUserInfo;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -24,12 +26,27 @@ public class JwtUtil {
     }
 
 
-    public String extractUsername(String token) {
-        return Jwts.parserBuilder()
+
+
+   public JwtUserInfo getUserInfoFromToken(String token){
+       Claims claims = Jwts.parserBuilder()
+               .setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes()))
+               .build()
+               .parseClaimsJws(token)
+               .getBody();
+       Long id = claims.get("id", Long.class);
+       String username = claims.getSubject();
+       String role = claims.get("role",String.class);
+       return  new JwtUserInfo(id,username,role);
+   }
+
+   public  Long getIdFromToken(String token){
+        Claims claims = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes()))
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
-    }
+                .getBody();
+       Long id = claims.get("id", Long.class);
+       return id;
+   }
 }

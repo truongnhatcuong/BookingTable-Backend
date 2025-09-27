@@ -4,8 +4,8 @@ package com.example.projectSpring1.controller;
 import com.example.projectSpring1.dto.request.LoginRequest;
 import com.example.projectSpring1.dto.response.ApiResponse;
 import com.example.projectSpring1.dto.response.EmployeeResponse;
-import com.example.projectSpring1.dto.response.authenticationResponse;
-import com.example.projectSpring1.config.JwtUtil;
+import com.example.projectSpring1.dto.response.AuthenticationResponse;
+import com.example.projectSpring1.configuration.JwtUtil;
 import com.example.projectSpring1.service.EmployeeUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,12 +25,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class authAdmin {
+public class AuthAdmin {
     private final AuthenticationManager authManager;
     private final JwtUtil jwtUtil;
     private final EmployeeUserDetailsService userDetailsService;
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<authenticationResponse>> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<ApiResponse<AuthenticationResponse>> login(@RequestBody LoginRequest request) {
         try {
             Authentication authentication = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
@@ -40,21 +40,21 @@ public class authAdmin {
 
             return ResponseEntity.ok(
                     new ApiResponse<>("Login Success",
-                            authenticationResponse.builder()
+                            AuthenticationResponse.builder()
                                     .token(jwtUtil.generationToken(authentication.getName(),employeeResponse.getEmployeeId(),employeeResponse.getRole()))
                                     .authenticated(true)
                                     .build())
             );
         } catch (UsernameNotFoundException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponse<>("Business Error",  authenticationResponse.builder()
+                    .body(new ApiResponse<>("Business Error",  AuthenticationResponse.builder()
                             .authenticated(false)
                             .token(null)
                             .error("User not found")
                             .build()));
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponse<>("Business Error",  authenticationResponse.builder()
+                    .body(new ApiResponse<>("Business Error",  AuthenticationResponse.builder()
                             .authenticated(false)
                             .token(null)
                             .error("Invalid password") // add extra field in AuthenticationResponse

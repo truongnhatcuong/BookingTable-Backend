@@ -18,10 +18,8 @@ public class Employee {
      String firstName;
      String lastName;
     @Column(nullable = false, unique = true)   // ✅ unique username
-
     String email;
     @Column(nullable = false, unique = true)   // ✅ unique username
-
     String username;
     @Column(nullable = false)  // password not null
     String password;

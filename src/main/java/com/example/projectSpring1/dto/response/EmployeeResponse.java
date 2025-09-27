@@ -12,7 +12,7 @@
         Long employeeId;
         String firstName;
         String lastName;
+        String username;
         String email;
         String role;
-        String username;
     }
