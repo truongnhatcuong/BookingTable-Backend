@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -15,14 +18,28 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
      Long employeeId;
-     String firstName;
-     String lastName;
-    @Column(nullable = false, unique = true)   // ✅ unique username
-    String email;
-    @Column(nullable = false, unique = true)   // ✅ unique username
-    String username;
-    @Column(nullable = false)  // password not null
+    @Column(name = "employee_code", nullable = false, unique = true, length = 20)
+     String employeeCode;
+    @Column(name = "full_name", nullable = false, length = 100)
+     String fullName;
+    @Column(unique = true, length = 100)
+     String email;
+    @Column(length = 15)
+     String phone;
+    @Column(nullable = false, unique = true)
     String password;
-    @Column(nullable = false)
-    String role;
+    @Column(precision = 12, scale = 2)
+     BigDecimal salary;
+    @Column(name = "hire_date")
+     LocalDate hireDate;
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "ENUM('active', 'inactive', 'terminated') DEFAULT 'active'")
+     EmployeeStatus status = EmployeeStatus.ACTIVE;
+    enum EmployeeStatus {
+        ACTIVE, INACTIVE, TERMINATED
+    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")
+    Role role;
+
 }
