@@ -23,6 +23,6 @@ public class Permission {
      String permissionName;
     @Column(columnDefinition = "TEXT")
      String description;
-    @ManyToMany(mappedBy = "permissions") // phải khớp với field "permissions" bên Role
+    @ManyToMany(mappedBy = "permissions")
      Set<Role> roles;
 }
