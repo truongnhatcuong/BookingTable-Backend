@@ -8,12 +8,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoleResponse {
-    Long id;
-    String name;
-    String description;
+     Long roleId;
+     String roleName;
+     String description;
+     Set<String> permissionNames;
 }

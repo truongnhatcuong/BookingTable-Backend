@@ -12,36 +12,29 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
-@RequestMapping("/api/role")
+@RequestMapping("/api/roles")
 @RequiredArgsConstructor
 public class RoleController {
-    @Autowired
-    RoleService roleService;
-    @PostMapping
-    public ResponseEntity<ApiResponse<RoleResponse>>CreateRole(@Valid @RequestBody RoleCreateRequest request){
-        RoleResponse response = roleService.CreateRoleService(request);
-        return  ResponseEntity.ok(
-                new ApiResponse<>("Create Success",response)
-        );
-    };
+    private final RoleService roleService;
 
-    @GetMapping
-    public  ResponseEntity<ApiResponse<List<RoleResponse>>> getALlRole(){
-        List<RoleResponse> roles = roleService.findAllRoles();
-        return  ResponseEntity.ok(
-                new ApiResponse<>("Create Success",roles)
-        );
+    @PostMapping
+    public ResponseEntity<ApiResponse<RoleResponse>> createRole(@Valid @RequestBody RoleCreateRequest request){
+        RoleResponse response = roleService.CreateRoleService(request);
+        return ResponseEntity.ok(new ApiResponse<>("Create Success", response));
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse<List<RoleResponse>>> getAllRoles() {
+        List<RoleResponse> roles = roleService.getAllRoles();
+        return ResponseEntity.ok(new ApiResponse<>("success",roles));
+    }
+
+
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> DeleteRole(@PathVariable Long id){
-         roleService.deleteById(id);
-        ApiResponse<Void> response = new ApiResponse<>();
-        response.setMessage("Role deleted successfully");
-        response.setData(null);
-        return  ResponseEntity.ok(response );
+    public ResponseEntity<ApiResponse<Void>> deleteRole(@PathVariable Long id){
+        roleService.deleteById(id);
+        return ResponseEntity.ok(new ApiResponse<>("Role deleted successfully", null));
     }
-
 }

@@ -14,9 +14,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<Object>> handleRuntimeException(RuntimeException ex) {
         return ResponseEntity
-                .status(HttpStatus.NOT_FOUND) // 404 is better for missing resources
+                .status(HttpStatus.NOT_FOUND)
                 .body(new ApiResponse<>("Business Error", ex.getMessage()));
     }
+
 
 
     // Validation errors (e.g. @Valid failed)
