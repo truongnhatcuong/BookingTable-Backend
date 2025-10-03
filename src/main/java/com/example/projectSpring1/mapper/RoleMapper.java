@@ -28,9 +28,4 @@ public interface RoleMapper {
         if(permissions ==null)return Set.of();
         return permissions.stream().map(Permission::getPermissionName).collect(Collectors.toSet());
     }
-    @Named("permissionNameMapper")
-
-    default String mapPermissionToString(Permission permission) {
-        return permission.getPermissionName();
-    }
 }
